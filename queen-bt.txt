@@ -1,0 +1,43 @@
+#include<stdio.h>
+#include<stdlib.h>
+int queens;
+int place(int queen, int c, int sol_vec[queens])
+{
+for(int i = 0; i < queen; i++)
+{
+if(sol_vec[i] == c || abs(queen - i) == abs(sol_vec[i] - c))
+return 0;
+}
+return 1;
+}
+void nQueen(int queen,int sol_vec[queens])
+{
+for(int c = 0; c < queens; c++)
+{
+if(place(queen, c, sol_vec))
+{
+sol_vec[queen] = c;
+if( queen == (queens - 1))
+{
+printf("The queens will be placed in the following columns\n");
+for(int i = 0; i < queens; i++)
+{
+printf("Queen No %d is placed in column %d\n", i + 1, sol_vec[i]);
+}
+printf("\n");
+}
+else
+nQueen(queen + 1, sol_vec);
+}
+}
+}
+int main()
+{
+int c;
+printf("Enter number of queens: ");
+scanf("%d", &queens);
+c = queens;
+int sol_vec[queens];
+nQueen(0, sol_vec);
+return 0;
+}
