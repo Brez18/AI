@@ -1,0 +1,21 @@
+def tower_of_hanoi_dfs(n):
+    """
+    Solves the Tower of Hanoi problem with n disks using depth-first search.
+    Returns the sequence of moves as a list of tuples (source, target).
+    """
+    def dfs_helper(source, target, temp, n, moves):
+        if n == 1:
+            moves.append((source, target))
+        else:
+            dfs_helper(source, temp, target, n-1, moves)
+            moves.append((source, target))
+            dfs_helper(temp, target, source, n-1, moves)
+
+    moves = []  
+    dfs_helper(0, 2, 1, n, moves)
+    return moves
+n = 3  # number of disks
+moves = tower_of_hanoi_dfs(n)
+print(f"Solution for {n} disks:")
+for move in moves:
+    print(f"Move disk from peg {move[0]} to peg {move[1]}")

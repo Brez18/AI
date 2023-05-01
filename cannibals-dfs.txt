@@ -1,0 +1,175 @@
+import java.util.Stack;
+
+class Shore{
+    int missionaries, cannibals, boatHere;
+
+    Shore(int m, int c, int here)
+    {
+        missionaries = m;
+        cannibals = c;
+        boatHere = here;
+
+    }
+    
+}
+
+public class Cannibals {
+
+    static boolean[][][] isVisited;
+
+    public static void main(String[] args) {
+        
+        Stack<Shore> stack = new Stack<Shore>();
+
+        Shore leftShore = new Shore(3, 3, 1);
+        
+        isVisited = new boolean[4][4][2];
+
+        isVisited[leftShore.missionaries][leftShore.cannibals][leftShore.boatHere] = true;
+
+        stack.push(leftShore);
+
+        while(!stack.isEmpty())
+        {
+            // System.out.println(queue.size());
+            Shore currentShore = stack.pop();
+
+            // if(isVisited[currentShore.missionaries][currentShore.cannibals][currentShore.boatHere])
+            // continue;
+            System.out.println("\n\n");
+            
+            if(currentShore.boatHere ==1)
+            System.out.println(currentShore.missionaries + "M "+  currentShore.cannibals + 'C'+ " (Boat)........... " + (3-currentShore.missionaries)+ "M "+ (3-currentShore.cannibals)+ 'C');
+            else
+            System.out.println(currentShore.missionaries + "M "+  currentShore.cannibals + 'C'+ " ...........(Boat) " + (3-currentShore.missionaries)+ "M "+ (3-currentShore.cannibals)+ 'C');
+
+
+            // final state
+            if(currentShore.cannibals==0 && currentShore.missionaries ==0)
+            {
+                System.out.println("\nReached destination state");
+                return;
+            }
+            
+            // Two cannibals travel
+            if(currentShore.boatHere == 1 && isValid(currentShore.missionaries, currentShore.cannibals - 2))
+            {
+                if(!isVisited[currentShore.missionaries][currentShore.cannibals - 2][0])
+                {
+                    isVisited[currentShore.missionaries][currentShore.cannibals - 2][0] = true;
+                    stack.push(new Shore(currentShore.missionaries, currentShore.cannibals -2, 0));
+                }
+                
+                
+            }
+            
+
+            //Two missionaries travel
+            if(currentShore.boatHere == 1 && isValid(currentShore.missionaries - 2, currentShore.cannibals))
+            {
+                if(!isVisited[currentShore.missionaries - 2][currentShore.cannibals][0])
+                {
+                    isVisited[currentShore.missionaries - 2][currentShore.cannibals][0] = true;
+
+                    stack.push(new Shore(currentShore.missionaries - 2, currentShore.cannibals, 0));
+                }
+                
+
+            }
+
+            // One missionary one cannibal travel
+            if(currentShore.boatHere == 1 && isValid(currentShore.missionaries - 1, currentShore.cannibals - 1))
+            {
+                if(!isVisited[currentShore.missionaries - 1][currentShore.cannibals - 1][0])
+                {
+                    isVisited[currentShore.missionaries - 1][currentShore.cannibals - 1][0] = true;
+
+                    stack.push(new Shore(currentShore.missionaries - 1, currentShore.cannibals - 1, 0));
+                }
+                
+
+            }
+
+            // Two cannibals return
+            if(currentShore.boatHere == 0 && isValid(currentShore.missionaries, currentShore.cannibals + 2))
+            {
+                if(!isVisited[currentShore.missionaries][currentShore.cannibals + 2][1])
+                {
+                    isVisited[currentShore.missionaries][currentShore.cannibals + 2][1] = true;
+
+                    stack.push(new Shore(currentShore.missionaries, currentShore.cannibals + 2, 1));
+                }
+                
+
+            }
+
+            // Two missionaries return
+            if(currentShore.boatHere == 0 && isValid(currentShore.missionaries + 2, currentShore.cannibals))
+            {
+                if(!isVisited[currentShore.missionaries + 2][currentShore.cannibals][1])
+                {
+                    isVisited[currentShore.missionaries + 2][currentShore.cannibals][1] = true;
+
+                    stack.push(new Shore(currentShore.missionaries + 2, currentShore.cannibals, 1));
+                }
+                
+
+            }
+
+            // One missionary one cannibal return
+            if(currentShore.boatHere == 0 && isValid(currentShore.missionaries + 1, currentShore.cannibals + 1))
+            {
+                if(!isVisited[currentShore.missionaries + 1][currentShore.cannibals + 1][1])
+                {
+                    isVisited[currentShore.missionaries + 1][currentShore.cannibals + 1][1] = true;
+
+                    stack.push(new Shore(currentShore.missionaries + 1, currentShore.cannibals + 1, 1));
+                }
+                
+
+            }
+
+            // One missionary return
+            if(currentShore.boatHere == 0 && isValid(currentShore.missionaries + 1, currentShore.cannibals))
+            {
+                if(!isVisited[currentShore.missionaries + 1][currentShore.cannibals][1])
+                {
+                    isVisited[currentShore.missionaries + 1][currentShore.cannibals][1] = true;
+
+                    stack.push(new Shore(currentShore.missionaries + 1, currentShore.cannibals, 1));
+                }
+                
+            }
+
+            // One cannibal return
+            if(currentShore.boatHere == 0 && isValid(currentShore.missionaries, currentShore.cannibals + 1))
+            {
+                if(!isVisited[currentShore.missionaries][currentShore.cannibals + 1][1])
+                {
+                    isVisited[currentShore.missionaries][currentShore.cannibals + 1][1] = true;
+
+                    stack.push(new Shore(currentShore.missionaries, currentShore.cannibals + 1, 1));
+                }
+                
+            }
+
+        }
+
+        
+    }
+
+    static boolean isValid(int missionaries, int cannibals)
+    {
+
+        if(missionaries<0 || missionaries >3 || cannibals < 0 || cannibals >3) 
+            return false;
+
+        if(missionaries == 0 && cannibals>=0 && cannibals <=3) return true; 
+
+        if((missionaries < cannibals && missionaries>0) || (3 - missionaries < 3- cannibals && missionaries<3)) 
+            return false;
+
+        return true;
+
+    }
+}

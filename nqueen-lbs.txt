@@ -1,0 +1,57 @@
+import random
+
+# Returns a random initial state, where each queen is placed in a different column
+def initial_state(n):
+    return [random.randint(0, n-1) for _ in range(n)]
+
+# Computes the number of conflicting queens in a state
+def conflicts(state):
+    n = len(state)
+    count = 0
+    for i in range(n):
+        for j in range(i+1, n):
+            if state[i] == state[j] or abs(state[i]-state[j]) == j-i:
+                count += 1
+    return count
+
+# Returns the best neighbor of a state, where the best neighbor has the smallest number of conflicts
+def best_neighbor(state):
+    n = len(state)
+    best_count = conflicts(state)
+    best_state = state
+    for i in range(n):
+        for j in range(n):
+            if j != state[i]:
+                new_state = state.copy()
+                new_state[i] = j
+                count = conflicts(new_state)
+                if count < best_count:
+                    best_count = count
+                    best_state = new_state
+    return best_state
+
+# Hill climb algorithm to solve the n-queens problem
+def nqueens_hillclimb(n, max_restarts=100):
+    best_solution = None
+    best_count = n * (n-1) // 2
+    for _ in range(max_restarts):
+        current_state = initial_state(n)
+        current_count = conflicts(current_state)
+        while current_count > 0:
+            neighbor_state = best_neighbor(current_state)
+            neighbor_count = conflicts(neighbor_state)
+            if neighbor_count >= current_count:
+                break
+            current_state = neighbor_state
+            current_count = neighbor_count
+        if current_count < best_count:
+            best_solution = current_state
+            best_count = current_count
+        if best_count == 0:
+            break
+    return best_solution
+
+# Example usage
+n = 4
+solution = nqueens_hillclimb(n, max_restarts=1000)
+print(solution)

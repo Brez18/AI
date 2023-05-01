@@ -1,0 +1,283 @@
+import java.util.Scanner;
+
+class Final {
+
+    int row, col;
+    static char player = 'X', opponent = 'O';
+
+    
+
+    public static boolean isWinning(char[][] board)
+    {
+        // Checking for Rows for X or O victory.
+        for (int row = 0; row < 3; row++) {
+            if (board[row][0] == board[row][1] && board[row][1] == board[row][2]) {
+                if (board[row][0] == player || board[row][0] == opponent)
+                    return true;
+            }
+        }
+
+        // Checking for Columns for X or O victory.
+        for (int col = 0; col < 3; col++) {
+            if (board[0][col] == board[1][col] &&
+                    board[1][col] == board[2][col]) {
+                if (board[0][col] == player || board[0][col] == opponent)
+                    return true; 
+            }
+        }
+
+        // Checking for Diagonals for X or O victory.
+        if (board[0][0] == board[1][1] && board[1][1] == board[2][2]) {
+            if (board[0][0] == player || board[0][0] == opponent)
+                return true; 
+        }
+
+        if (board[0][2] == board[1][1] && board[1][1] == board[2][0]) {
+            if (board[0][2] == player || board[0][2] == opponent)
+                return true; 
+        }
+
+        // If none of them have won then return false
+        return false;
+    }
+    
+  
+
+    static Boolean isMovesLeft(char board[][]) {
+
+        // If any blank is found return true
+        for (int i = 0; i < 3; i++)
+            for (int j = 0; j < 3; j++)
+                if (board[i][j] == ' ')
+                    return true;
+        return false;
+    }
+    
+
+    static int evaluate(char board[][]) {
+        
+        // Check all rows for winning
+        for (int row = 0; row < 3; row++) {
+            if (board[row][0] == board[row][1] &&
+                    board[row][1] == board[row][2]) {
+                if (board[row][0] == player)
+                    return +10;
+                else if (board[row][0] == opponent)
+                    return -10;
+            }
+        }
+
+        // Check all columns for winning
+        for (int col = 0; col < 3; col++) {
+            if (board[0][col] == board[1][col] &&
+                    board[1][col] == board[2][col]) {
+                if (board[0][col] == player)
+                    return +10;
+
+                else if (board[0][col] == opponent)
+                    return -10;
+            }
+        }
+
+        // Check diagonals for winning
+        if (board[0][0] == board[1][1] && board[1][1] == board[2][2]) {
+            if (board[0][0] == player)
+                return +10;
+            else if (board[0][0] == opponent)
+                return -10;
+        }
+
+        if (board[0][2] == board[1][1] && board[1][1] == board[2][0]) {
+            if (board[0][2] == player)
+                return +10;
+            else if (board[0][2] == opponent)
+                return -10;
+        }
+
+        return 0;
+    } 
+
+
+    static int minimax(char board[][], int depth, Boolean isMax, int alpha, int beta) {
+        int score = evaluate(board);
+
+        if (score == 10 || score == -10)
+            return score; 
+
+        // If the game is over, it is a tie
+        if (!isMovesLeft(board))
+            return 0;
+
+        // Turn of max player
+        if (isMax) {
+            int best = Integer.MIN_VALUE;
+
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    
+                    // Do the changes only if celll is empty
+                    if (board[i][j] == ' ') {  
+                        board[i][j] = player;
+                        best = Math.max(best, minimax(board,
+                                depth + 1, !isMax, alpha, beta));
+
+                        alpha = Math.max(alpha, best); 
+                        board[i][j] = ' ';
+                        if (beta <= alpha)
+                            break;
+
+                    }
+                }
+            }
+            return best;
+        }
+
+        // Turn of Min player
+        else {
+            int best = Integer.MAX_VALUE;
+
+            // Traverse all cells
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+
+                    // Do the changes only if cell is empty
+                    if (board[i][j] == ' ') {
+
+                        board[i][j] = opponent; 
+                        best = Math.min(best, minimax(board,
+                                depth + 1, !isMax, alpha, beta));
+
+                        beta = Math.min(beta, best); 
+                        board[i][j] = ' ';
+
+                        if (beta <= alpha)
+                            break;
+                    }
+                }
+            }
+            return best;
+        }
+    }
+
+    public static void displayBoard(char board[][]) {
+        System.out.println("\nThe current board is: \n");
+        
+        for (int i = 0; i < 3; i++) {
+            System.out.print("| ");
+            for (int j = 0; j < 3; j++) {
+                System.out.print(board[i][j] + " | ");
+            }
+            System.out.println();
+        }
+    }
+ 
+    static Final findBestMove(char board[][]) {
+        int bestVal = Integer.MIN_VALUE;
+        Final bestMove = new Final();
+        bestMove.row = -1;
+        bestMove.col = -1;
+
+        // to go through all empty cells and find the best move
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+
+                // Check if cell is empty
+                if (board[i][j] == ' ') { 
+
+                    board[i][j] = player;
+                    // check current cell 
+                    int moveVal = minimax(board, 0, false, Integer.MIN_VALUE, Integer.MAX_VALUE);
+ 
+                    board[i][j] = ' ';
+ 
+                    // Store the best move
+                    if (moveVal > bestVal) {
+                        bestMove.row = i;
+                        bestMove.col = j;
+                        bestVal = moveVal;
+                    }
+                }
+            }
+        }
+
+        System.out.printf("The value of the best Move " + "is : %d\n\n", bestVal);
+
+        return bestMove;
+    }
+
+    // Driver code
+    public static char[][] play(char[][] board) {
+        // char board[][] = {
+        //         { 'X', 'O', ' ' },
+        //         { ' ', 'O', ' ' },
+        //         { ' ', ' ', ' ' } };
+
+        Final bestMove = findBestMove(board);
+
+        System.out.println("The computer chooses positipn (" + bestMove.row + "," + bestMove.col + ")");
+
+        board[bestMove.row][bestMove.col] = player;
+        // displayBoard(board);
+        return board;
+    }
+
+}
+
+// This code is contributed by PrinciRaj1992
+
+
+public class astar{
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        char[][] board = new char[3][3];
+
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                board[i][j] = ' ';
+            }
+        }
+
+        System.out.println("\nYou take O, computer takes X\n");
+
+        while (!Final.isWinning(board) && Final.isMovesLeft(board)) {
+
+            // TicTacToe.displayBoard(board);
+
+            System.out.println("Enter the row number for O: ");
+            int row = sc.nextInt();
+            System.out.println("Enter the column number for O: ");
+            int col = sc.nextInt();
+            board[row][col] = 'O';
+
+            if(!Final.isWinning(board) && Final.isMovesLeft(board)) {
+                
+                board = Final.play(board);
+            }
+
+            Final.displayBoard(board);
+
+        }
+
+        if(Final.evaluate(board) > 0) 
+        {
+            System.out.println("Computer wins");
+        }
+        else if(Final.evaluate(board) < 0) 
+        {
+            System.out.println("You win");
+        }
+        else 
+        {
+            System.out.println("It's a tie");
+        }
+
+        sc.close();
+
+        
+    }
+
+
+}
