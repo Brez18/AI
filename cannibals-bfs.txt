@@ -1,0 +1,57 @@
+from collections import deque
+
+def is_valid(state):
+    # Check if there are more cannibals than missionaries on any side
+    if state[0][0] < state[0][1] and state[0][0] > 0:
+        return False
+    if state[1][0] < state[1][1] and state[1][0] > 0:
+        return False
+    return True
+
+def is_goal(state):
+    return state == ((0, 0), (3, 3), 'L')
+
+def generate_successors(state):
+    successors = []
+    if state[2] == 'L':
+        for m in range(3):
+            for c in range(3):
+                if m + c > 0 and m + c <= 2:
+                    new_state = ((state[0][0] - m, state[0][1] - c), (state[1][0] + m, state[1][1] + c), 'R')
+                    if is_valid(new_state):
+                        successors.append(new_state)
+    else:
+        for m in range(3):
+            for c in range(3):
+                if m + c > 0 and m + c <= 2:
+                    new_state = ((state[0][0] + m, state[0][1] + c), (state[1][0] - m, state[1][1] - c), 'L')
+                    if is_valid(new_state):
+                        successors.append(new_state)
+    return successors
+
+def bfs_search(initial_state):
+    frontier = deque()
+    explored = set()
+    frontier.append((initial_state, []))
+
+    while frontier:
+        state, moves = frontier.popleft()
+        if is_goal(state):
+            return moves
+        explored.add(state)
+        for child in generate_successors(state):
+            if child not in explored and child not in [f[0] for f in frontier]:
+                new_move = ""
+                if state[2] == 'L':
+                    new_move = f"{child[0][0] - state[0][0]}M,{child[0][1] - state[0][1]}C,R"
+                else:
+                    new_move = f"{state[1][0] - child[1][0]}M,{state[1][1] - child[1][1]}C,L"
+                frontier.append((child, moves + [new_move]))
+
+if __name__ == '__main__':
+    initial_state = ((3, 3), (0, 0), 'L')
+    moves = bfs_search(initial_state)
+    print("Moves taken to reach the goal:")
+    for move in moves:
+        print(move)
+    print("Done.")
